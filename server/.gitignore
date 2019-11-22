@@ -1,0 +1,7 @@
+pixelflut_v6
+
+build/
+*.o
+
+*.tmp
+*.map

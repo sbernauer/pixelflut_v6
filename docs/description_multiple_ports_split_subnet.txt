@@ -1,0 +1,45 @@
+Anbei mal noch meine Überlegungen das 2000:1234::/64 (das Pixelflut v6-Netz) so zu splitten, dass mehrere Server verschiedene Teile des Bildschirms rendern). Das funktioniert eigentlich echt perfekt :)
+An dieser Stelle freue ich mich, wenn jemand eine Idee hat, wie wir die Teilbilder möglichst einfach - bestenfalls per passendem VNC-Client - wieder zusammenführen.
+Zur Info: Der Pixelflut-Server agiert als VNC-Server um das Spiel zu betrachten.
+
+Gesamtes /64 Netz
+=================
+IP address  2000:1234::/64
+network range   2000:1234:0000:0000:0000:0000:0000:0000
+                2000:1234:0000:0000:ffff:ffff:ffff:ffff
+total IP addresses  18446744073709551616
+
+Aufbau IPv6 Adresse: Prefix:XXXX:YYYY:RRGG:BB00
+Beispiel:
+Assuming the subnet
+4000:1234:1234:1234:/64 for the server, if you do ping 4000:1234:1234:1234:007B:007B:ffff:ff00 you send an ICMP packet to the server, coloring the pixel (0x7b,0x7b) white. (0x7b = 123).
+
+Möglichkeit 1: Bilschirm vertikal in 2 Teile splitten (2 Server):
+=================================================================
+
+Subnetz 1 (linke Hälfte)
+------------------------
+IP address  2000:1234::/71
+network range   2000:1234:0000:0000:0000:0000:0000:0000
+                ==> PX 0 y
+                2000:1234:0000:0000:01ff:ffff:ffff:ffff
+                ==> PX 511 y
+total IP addresses  144115188075855872
+
+Subnetz 2 (rechte Hälfte)
+-------------------------
+IP address  2000:1234:0:0:200::/71
+network range   2000:1234:0000:0000:0200:0000:0000:0000
+                ==> PX 512 y
+                2000:1234:0000:0000:03ff:ffff:ffff:ffff
+                ==> PX 1023 y
+total IP addresses  144115188075855872
+
+
+Möglichkeit 2: Bilschirm vertikal in 4 Teile splitten (4 Server):
+=================================================================
+
+Subnetz 1 (X: 0  -255):  2000:1234::/72
+Subnetz 2 (X: 256-511):  2000:1234:0:0:100::/72
+Subnetz 3 (X: 512-767):  2000:1234:0:0:200::/72
+Subnetz 3 (X: 768-1023): 2000:1234:0:0:300::/72 

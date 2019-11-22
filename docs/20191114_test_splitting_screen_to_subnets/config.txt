@@ -1,0 +1,13 @@
+Run on he21:
+
+ip link set dev enp8s0 up
+ip addr add fe80::21:1/64 dev enp8s0
+ip neigh add fe80::34:1 lladdr 00:02:c9:3a:9d:70 dev enp8s0
+ip route add 4000:42::/71 dev enp8s0 nexthop via fe80::34:1
+
+ip link set dev enp8s0d1 up
+ip addr add fe80::21:2/64 dev enp8s0d1
+ip neigh add fe80::34:2 lladdr 00:02:c9:3a:9d:71 dev enp8s0d1
+ip route add 4000:42:0:0:200::/71 dev enp8s0d1 nexthop via fe80::34:2
+
+==>> Every functioned as designed
