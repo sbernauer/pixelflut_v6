@@ -14,6 +14,8 @@
 #include <rte_mempool.h>
 #include <rte_mbuf.h>
 
+#include "network.h"
+
 #define MAX_RX_QUEUE_PER_LCORE 16
 #define MAX_TIMER_PERIOD 86400 /* 1 day max */
 #define RX_BURST_SIZE 32
@@ -287,20 +289,26 @@ static void init_port(unsigned int port_id) {
     printf(":: initializing port: %d done\n", port_id);
 }
 
-struct worker_thread_args
-{
-    int port_id;
-    int start_queue_id;
-    struct fb *fb;
-};
-
 void *worker_thread(struct worker_thread_args *args) {
-	printf("worker_thread\n");
-
     // Read args
     int port_id = args->port_id;
     int start_queue_id = args->start_queue_id;
-    struct fb *fb = args->fb;
+    struct fb *fb;
+
+    // get framebuffer on NUMA node
+    unsigned numa_node = get_numa_node();
+    pthread_mutex_lock(&args->fb_lock);
+    fb = fb_get_fb_on_node(args->fb_list, numa_node);
+    if(!fb) {
+        printf("Failed to find fb on NUMA node %u, creating new fb\n", numa_node);
+        if(fb_alloc(&fb, args->fb_size->width, args->fb_size->height)) {
+            fprintf(stderr, "Failed to allocate fb on node\n");
+            return -1;
+        }
+        printf("Allocated fb on NUMA node %u\n", fb->numa_node);
+        llist_append(args->fb_list, &fb->list);
+    }
+    pthread_mutex_unlock(&args->fb_lock);
 
     struct rte_mbuf *mbufs[RX_BURST_SIZE];
     struct ether_hdr *eth_hdr;
@@ -392,7 +400,7 @@ void *worker_thread(struct worker_thread_args *args) {
 }
 
 int
-net_listen(int argc, char** argv, struct fb* fb, bool do_exit)
+net_listen(int argc, char** argv, struct llist* fb_list, pthread_mutex_t fb_lock, struct fb_size* fb_size, bool do_exit)
 {
 	force_quit = do_exit;
     int ret;
@@ -460,9 +468,11 @@ net_listen(int argc, char** argv, struct fb* fb, bool do_exit)
             printf("Launching on port %u, core %u and queue %u - %u (inclusive)\n", port_id, core_id_counter, queue_id_counter, queue_id_counter + rx_queues_per_core - 1);
 
             struct worker_thread_args args;
-            args.fb=fb;
             args.port_id = port_id;
             args.start_queue_id = queue_id_counter;
+            args.fb_list = fb_list;
+            args.fb_lock = fb_lock;
+            args.fb_size = fb_size;
 
             if (!rte_lcore_is_enabled(core_id_counter)) {
                 rte_exit(EXIT_FAILURE, "Lcore %u is not enabled, so cant start worker_thread on it. Maybe you have to few cores enables with the EAL-option (-l / -c) or on your system. I need one master core (id: 0) and a lcore for every started worker_thread.\n");

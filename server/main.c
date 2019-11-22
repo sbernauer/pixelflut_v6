@@ -123,6 +123,7 @@ int main(int argc, char** argv) {
 
 	int err, opt;
 	struct fb* fb;
+	struct llist fb_list;
 	struct llist fronts;
 	struct llist_entry* cursor;
 	struct frontend* front;
@@ -236,6 +237,9 @@ int main(int argc, char** argv) {
 		goto fail;
 	}
 
+	llist_init(&fb_list);
+	sdl_param.cb_private = &fb_list;
+	sdl_param.resize_cb = resize_cb;
 	printf("Registering frontends\n");
 	llist_init(&fronts);
 	while(frontend_cnt > 0 && frontend_cnt--) {
@@ -305,7 +309,7 @@ int main(int argc, char** argv) {
 	// // 	}
 	// }
 
-	if((err = net_listen(argc, argv, fb, force_quit))) {
+	if((err = net_listen(argc, argv, fb, fb_list, fb_lock, fb_size, force_quit))) {
 		fprintf(stderr, "Failed to start listening: %d => %s\n", err, strerror(-err));
 		goto fail;
 	}
