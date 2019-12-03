@@ -1,0 +1,70 @@
+
+# ln -s /usr/include/asm-generic /usr/include/asm
+sudo ln -s /usr/include/x86_64-linux-gnu/asm/ /usr/include
+
+clang -O2 -target bpf -c dropper.c -o dropper.o
+
+# Load
+sudo ip link set dev lo xdp obj dropper_udp.o sec .text
+
+# Unload
+sudo ip link set dev lo xdp off
+
+
+
+
+clang -O2 -target bpf -c dropper_udp.c -o dropper_udp.o
+objdump -t dropper_udp.o
+
+sudo ip link set dev lo xdp obj dropper_udp.o sec dropper_main
+
+
+
+clang -O2 -target bpf -c dropper_map.c -o dropper_map.o
+objdump -t dropper_map.o
+
+sudo ip link set dev lo xdp obj dropper_map.o sec dropper_main
+
+
+
+
+sudo linux/tools/bpf/bpftool/bpftool prog show
+sudo linux/tools/bpf/bpftool/bpftool map show
+
+
+
+
+
+
+
+
+
+
+# NEW IN KERNEL
+# COMPILE IN <linux kernel-source>/samples/bpf
+
+sudo ip addr add fe80::1c79:676c:9391:d620/64 dev eno1
+sudo ip addr add fe80::00ab:0042:aaaa:aaff/64 dev eno1
+sudo ip addr add fe80::12ab:0042:aabb:ccff/64 dev eno1
+sudo ip addr add fe80::00ab:0042:aabb:ccff/64 dev eno1
+
+sudo ip addr add fe80::0000:0000:aabb:ccff/64 dev eno1
+sudo ip addr add fe80::0001:0000:aabb:ccff/64 dev eno1
+sudo ip addr add fe80::0000:0001:aabb:ccff/64 dev eno1
+sudo ip addr add fe80::0000:0001:1231:45ff/64 dev eno1
+
+
+sudo ip link set dev lo xdp off && sudo ip link set dev lo xdp obj xdp_pixelflut.o sec xdp_pixelflut_main
+sudo ip link set dev lo xdp off
+
+sudo ../../tools/bpf/bpftool/bpftool prog show
+sudo ../../tools/bpf/bpftool/bpftool map show
+sudo ../../tools/bpf/bpftool/bpftool map pin id 48 /sys/fs/bpf/xdp/globals/xdp_pixelflut
+
+
+
+sudo bpftrace -e 'tracepoint:kmem:kmalloc_node { printf("Requested %zu bytes (got %zu) from %lx to %p\n", args->bytes_req, args->bytes_alloc, args->call_site, args->ptr); }'
+
+
+sudo bpftrace -e 'tracepoint:bpf:bpf_map_create { printf("Requested %zu bytes (got %zu) from %lx to %p\n", args->bytes_req, args->bytes_alloc, args->call_site, args->ptr); }'
+
