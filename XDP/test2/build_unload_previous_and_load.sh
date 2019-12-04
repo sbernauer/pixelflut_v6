@@ -1,3 +1,1 @@
-./unload.sh
-./build.sh
-./unload.sh
+./unload.sh && ./build.sh && ./load.sh
