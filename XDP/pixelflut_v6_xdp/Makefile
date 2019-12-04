@@ -16,6 +16,7 @@ CLANG_FLAGS = -I. -I$(KDIR)/arch/$(ARCH)/include \
 -include $(KDIR)/include/linux/kconfig.h \
 -I$(KDIR)/tools/testing/selftests/bpf/ \
 -I$(KDIR)/tools/lib/bpf/ \
+-I/home/sbernauer/Desktop/Pixelflut/linux/tools/lib/bpf/ \
 -D__KERNEL__ -D__BPF_TRACING__ -Wno-unused-value -Wno-pointer-sign \
 -D__TARGET_ARCH_$(ARCH) -Wno-compare-distinct-pointer-types \
 -Wno-gnu-variable-sized-type-not-at-end \
