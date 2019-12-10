@@ -29,7 +29,7 @@ For example for an ConnectX-3 VPI dual port from Mellanox on an debian buster fo
 For details see https://doc.dpdk.org/guides/nics/mlx4.html.
 ```
 # Build dpdk
-sudo apt install libibverbs-dev librdmacm-dev libnuma-dev
+sudo apt install libibverbs-dev librdmacm-dev libnuma-dev linux-headers-$(uname -r)
 wget fast.dpdk.org/rel/dpdk-19.05.tar.xz
 tar xf dpdk-19.05.tar.xz
 cd dpdk-19.05
