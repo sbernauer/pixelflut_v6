@@ -34,7 +34,7 @@ wget fast.dpdk.org/rel/dpdk-19.05.tar.xz
 tar xf dpdk-19.05.tar.xz
 cd dpdk-19.05
 sed -i -r 's/CONFIG_RTE_LIBRTE_MLX4_PMD=n/CONFIG_RTE_LIBRTE_MLX4_PMD=y/' config/common_base
-sed -i -r 's/CONFIG_RTE_LIBRTE_MLX5_PMD=n/CONFIG_RTE_LIBRTE_MLX5_PMD=y/' config/common_base
+# MLX5: sed -i -r 's/CONFIG_RTE_LIBRTE_MLX5_PMD=n/CONFIG_RTE_LIBRTE_MLX5_PMD=y/' config/common_base
 # echo "CONFIG_RTE_LIBRTE_MLX4_PMD=y" >> config/common_linux
 make config T=x86_64-native-linux-gcc
 make -j 40
@@ -46,6 +46,7 @@ echo eth > /sys/bus/pci/devices/0000\:42\:00.0/mlx4_port2
 
 # Load kernel modules
 modprobe -a ib_uverbs mlx4_en mlx4_core mlx4_ib
+# MLX5: modprobe -a ib_uverbs mlx5_core mlx5_ib
 
 # This will find the carts and try to start the server, but will cause the following error message:
 # PMD: net_mlx4: 0x55e60ddae900: cannot attach flow rules (code 93, "Protocol not supported"), flow error type 2, cause 0x17e55d640, message: flow rule rejected by device
