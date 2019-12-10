@@ -34,6 +34,7 @@ wget fast.dpdk.org/rel/dpdk-19.05.tar.xz
 tar xf dpdk-19.05.tar.xz
 cd dpdk-19.05
 sed -i -r 's/CONFIG_RTE_LIBRTE_MLX4_PMD=n/CONFIG_RTE_LIBRTE_MLX4_PMD=y/' config/common_base
+sed -i -r 's/CONFIG_RTE_LIBRTE_MLX5_PMD=n/CONFIG_RTE_LIBRTE_MLX5_PMD=y/' config/common_base
 # echo "CONFIG_RTE_LIBRTE_MLX4_PMD=y" >> config/common_linux
 make config T=x86_64-native-linux-gcc
 make -j 40
