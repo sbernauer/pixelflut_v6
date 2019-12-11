@@ -48,7 +48,7 @@ echo eth > /sys/bus/pci/devices/0000\:42\:00.0/mlx4_port2
 modprobe -a ib_uverbs mlx4_en mlx4_core mlx4_ib
 # MLX5: modprobe -a ib_uverbs mlx5_core mlx5_ib
 
-# This will find the carts and try to start the server, but will cause the following error message:
+# This will find the cards and try to start the server, but will cause the following error message:
 # PMD: net_mlx4: 0x55e60ddae900: cannot attach flow rules (code 93, "Protocol not supported"), flow error type 2, cause 0x17e55d640, message: flow rule rejected by device
 # To fix this:
 echo "options mlx4_core log_num_mgm_entry_size=-7" >> /etc/modprobe.d/mlx4_core.conf
