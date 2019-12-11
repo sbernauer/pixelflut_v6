@@ -53,6 +53,11 @@ modprobe -a ib_uverbs mlx4_en mlx4_core mlx4_ib
 # To fix this:
 echo "options mlx4_core log_num_mgm_entry_size=-7" >> /etc/modprobe.d/mlx4_core.conf
 update-initramfs -u
+
+# If you get: net_mlx5: probe of PCI device aborted after encountering an error: Operation not supported
+# update to a newer version of libibverbs with
+echo "deb http://deb.debian.org/debian buster-backports main" >> /etc/apt/sources.list
+apt-get -t buster-backports install libibverbs-dev
 ```
 
 ### Allocate hugepages
