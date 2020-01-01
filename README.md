@@ -3,7 +3,7 @@
 ## Pixelflut v6
 Pixelflut v6 is a remake of the classical Pixelflut (v4). Pixelflut is a programming game, where multiple players can color pixels on a projector screen. The players want to draw pixels as fast as possible in their desired color to create an image on the screen. So the battle starts...
 
-The original Pixelflut uses ASCII-commands over a a TCP-Stream (for example `PX 123 123 ffffff` to color Pixel (123,123) white). Pixelflut v6 transfers its information in the IPv6 destination address. So the client must send IPv6 Packets, the overlying protocol is irrelevant.
+The original Pixelflut uses ASCII-commands over a a TCP-Stream (for example `PX 123 123 ffffff` to color Pixel (123,123) white). Pixelflut v6 transfers its information in the IPv6 destination address. So the client must send IPv6 Packets, the overlaying protocol is not relevant.
 The Pixelflut v6 server has an /64 IPv6 subnet, so the first 64 bits of the IPv6-address are fix. The x, y coordinate and color are appended and padded with 8 bits (0s or 1s). The resulting IPv6 destination address looks as following:
 `Prefix:XXXX:YYYY:RRGG:BB00`
 
@@ -17,6 +17,24 @@ ping 4000:1234:1234:1234:007B:007B:ffff:ff00
 ```
 you send an ICMP packet to the server, coloring the pixel (0x7b,0x7b) white. (0x7b = 123).
 
+### Why pixelflut v6?
+Pixelflut is often played at large hacker events like the Chaos Communication Congress, Easterhegg, GPN etc.
+Often the limit of the game is the server, which can't handle all the traffic comming from the client.
+A beefy server (shoreline) can only handle about 40G traffic, a laptop can produce 80G traffic (sturmflut).
+Nothing more to be said.
+Most time the RAM of the server is the limit, granting random access to very mutch clients to the framebuffer.
+A pixelflut (v4) server doesn't scale very well, because each TCP-Session can color every pixel on the screen in a random order.
+So every client or server has to access every pixel, the framebuffer must be shared.
+With each pixel having it's own IPv6-subnet you can simply divide the screen into different reigions and route the subnets to different servers.
+At the end you have to combine the segments to get a full picture of the game.
+This method scales very well, you could use in theory a dedicated server for each pixel...
+This is the main advatage of pixelflut v6 over pixelflut v4.
+For more details you can have a look at docs/description_multiple_ports_split_subnet.txt and docs/20191114_test_splitting_screen_to_subnets.
+
+Another advantage is, that a normal operating system can produce high bandwith rates, but not that much packet rates (in general).
+So we can use the advantage, that this server is not bottlenecked by the operating system, the client is.
+Clients have to get very advanced to cross this barrier.
+
 ## Preparing & Building the server
 The server uses the DPDK (https://www.dpdk.org/) framework, so your NIC must be supported by DPDK. Check this with http://core.dpdk.org/supported/.
 DPDK unbinds the NIC from the kernel, so it cannot be used for anything else than pixelflut v6. So if you want to watch the game via VNC or keep your ssh session to the server, your server must have mutliple NICs oder ports.
@@ -29,12 +47,11 @@ For example for an ConnectX-3 VPI dual port from Mellanox on an debian buster fo
 For details see https://doc.dpdk.org/guides/nics/mlx4.html.
 ```
 # Build dpdk
-sudo apt install libibverbs-dev librdmacm-dev libnuma-dev linux-headers-$(uname -r) libmnl-dev
+sudo apt install libibverbs-dev librdmacm-dev
 wget fast.dpdk.org/rel/dpdk-19.05.tar.xz
 tar xf dpdk-19.05.tar.xz
 cd dpdk-19.05
 sed -i -r 's/CONFIG_RTE_LIBRTE_MLX4_PMD=n/CONFIG_RTE_LIBRTE_MLX4_PMD=y/' config/common_base
-# MLX5: sed -i -r 's/CONFIG_RTE_LIBRTE_MLX5_PMD=n/CONFIG_RTE_LIBRTE_MLX5_PMD=y/' config/common_base
 # echo "CONFIG_RTE_LIBRTE_MLX4_PMD=y" >> config/common_linux
 make config T=x86_64-native-linux-gcc
 make -j 40
@@ -46,18 +63,12 @@ echo eth > /sys/bus/pci/devices/0000\:42\:00.0/mlx4_port2
 
 # Load kernel modules
 modprobe -a ib_uverbs mlx4_en mlx4_core mlx4_ib
-# MLX5: modprobe -a ib_uverbs mlx5_core mlx5_ib
 
-# This will find the cards and try to start the server, but will cause the following error message:
+# This will find the carts and try to start the server, but will cause the following error message:
 # PMD: net_mlx4: 0x55e60ddae900: cannot attach flow rules (code 93, "Protocol not supported"), flow error type 2, cause 0x17e55d640, message: flow rule rejected by device
 # To fix this:
 echo "options mlx4_core log_num_mgm_entry_size=-7" >> /etc/modprobe.d/mlx4_core.conf
 update-initramfs -u
-
-# If you get: net_mlx5: probe of PCI device aborted after encountering an error: Operation not supported
-# update to a newer version of libibverbs with
-echo "deb http://deb.debian.org/debian buster-backports main" >> /etc/apt/sources.list
-apt-get -t buster-backports install libibverbs-dev
 ```
 
 ### Allocate hugepages
