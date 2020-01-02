@@ -47,12 +47,12 @@ For example for an ConnectX-3 VPI dual port from Mellanox on an debian buster fo
 For details see https://doc.dpdk.org/guides/nics/mlx4.html.
 ```
 # Build dpdk
-sudo apt install libibverbs-dev librdmacm-dev
+sudo apt install libibverbs-dev librdmacm-dev libnuma-dev linux-headers-$(uname -r) libmnl-dev
 wget fast.dpdk.org/rel/dpdk-19.05.tar.xz
 tar xf dpdk-19.05.tar.xz
 cd dpdk-19.05
 sed -i -r 's/CONFIG_RTE_LIBRTE_MLX4_PMD=n/CONFIG_RTE_LIBRTE_MLX4_PMD=y/' config/common_base
-# echo "CONFIG_RTE_LIBRTE_MLX4_PMD=y" >> config/common_linux
+# MLX5: sed -i -r 's/CONFIG_RTE_LIBRTE_MLX5_PMD=n/CONFIG_RTE_LIBRTE_MLX5_PMD=y/' config/common_base
 make config T=x86_64-native-linux-gcc
 make -j 40
 sudo make install
@@ -64,11 +64,16 @@ echo eth > /sys/bus/pci/devices/0000\:42\:00.0/mlx4_port2
 # Load kernel modules
 modprobe -a ib_uverbs mlx4_en mlx4_core mlx4_ib
 
-# This will find the carts and try to start the server, but will cause the following error message:
+# This will find the cards and try to start the server, but will cause the following error message:
 # PMD: net_mlx4: 0x55e60ddae900: cannot attach flow rules (code 93, "Protocol not supported"), flow error type 2, cause 0x17e55d640, message: flow rule rejected by device
 # To fix this:
 echo "options mlx4_core log_num_mgm_entry_size=-7" >> /etc/modprobe.d/mlx4_core.conf
 update-initramfs -u
+
+# If you get: net_mlx5: probe of PCI device aborted after encountering an error: Operation not supported
+# update to a newer version of libibverbs with
+echo "deb http://deb.debian.org/debian buster-backports main" >> /etc/apt/sources.list
+apt-get -t buster-backports install libibverbs-dev
 ```
 
 ### Allocate hugepages
