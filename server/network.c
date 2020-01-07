@@ -42,8 +42,8 @@ print_usage()
 
 static inline void print_ether_addr(const char *what, struct ether_addr *eth_addr)
 {
-    char buf[ETHER_ADDR_FMT_SIZE];
-    ether_format_addr(buf, ETHER_ADDR_FMT_SIZE, eth_addr);
+    char buf[RTE_ETHER_ADDR_FMT_SIZE];
+    ether_format_addr(buf, RTE_ETHER_ADDR_FMT_SIZE, eth_addr);
     printf("%s%s", what, buf);
 }
 
@@ -213,7 +213,7 @@ static void init_port(unsigned int port_id) {
         .rxmode = {
             .split_hdr_size = 0,
             // .mq_mode = ETH_MQ_RX_RSS,
-            .max_rx_pkt_len = ETHER_MAX_LEN,
+            .max_rx_pkt_len = RTE_ETHER_MAX_LEN,
             // .offloads =
             //  DEV_RX_OFFLOAD_CHECKSUM    |
             //  DEV_RX_OFFLOAD_JUMBO_FRAME |
@@ -303,9 +303,9 @@ void *worker_thread(struct worker_thread_args *args) {
     struct fb *fb = args->fb;
 
     struct rte_mbuf *mbufs[RX_BURST_SIZE];
-    struct ether_hdr *eth_hdr;
+    struct rte_ether_hdr *eth_hdr;
     struct ipv4_hdr *ipv4_hdr;
-    struct ipv6_hdr *ipv6_hdr;
+    struct rte_ipv6_hdr *ipv6_hdr;
     struct rte_flow_error error;
     uint16_t nb_rx;
     uint16_t i, queue_id;
@@ -333,18 +333,18 @@ void *worker_thread(struct worker_thread_args *args) {
                 for (i = 0; i < nb_rx; i++) {
                     struct rte_mbuf *m = mbufs[i];
 
-                    eth_hdr = rte_pktmbuf_mtod(m, struct ether_hdr *);
+                    eth_hdr = rte_pktmbuf_mtod(m, struct rte_ether_hdr *);
                     // print_ether_addr("src=", &eth_hdr->s_addr);
                     // print_ether_addr(" - dst=", &eth_hdr->d_addr);
                     // printf(" - queue=0x%x", (unsigned int)i);
 
-                    if (eth_hdr->ether_type == rte_be_to_cpu_16(ETHER_TYPE_IPv6)) {
+                    if (eth_hdr->ether_type == rte_be_to_cpu_16(RTE_ETHER_TYPE_IPV6)) {
                         // printf("Found IPv6: ");
-                        ipv6_hdr = rte_pktmbuf_mtod_offset(m, struct ipv6_hdr *, sizeof(struct ether_hdr));
+                        ipv6_hdr = rte_pktmbuf_mtod_offset(m, struct rte_ipv6_hdr *, sizeof(struct rte_ether_hdr));
 
                         // if (ipv6_hdr->proto == 58) { // ICMP6
-                            //int icmp_type = *(&m + (sizeof(struct ether_hdr)));
-                            // uint8_t *icmp_type = rte_pktmbuf_mtod_offset(m, uint8_t*, sizeof(struct ether_hdr) + sizeof(struct ipv6_hdr));
+                            //int icmp_type = *(&m + (sizeof(struct rte_ether_hdr)));
+                            // uint8_t *icmp_type = rte_pktmbuf_mtod_offset(m, uint8_t*, sizeof(struct rte_ether_hdr) + sizeof(struct rte_ipv6_hdr));
                             // printf("Detected ICMP6 (Type: %u)", *icmp_type);
                             // TODO Reply to ICMP6
                         // }
@@ -363,7 +363,7 @@ void *worker_thread(struct worker_thread_args *args) {
                     // } else if (eth_hdr->ether_type == rte_be_to_cpu_16(ETHER_TYPE_IPv4)) {
                     //     printf("Found IPv4: ");
 
-                    //     ipv4_hdr = rte_pktmbuf_mtod_offset(m, struct ipv4_hdr *, sizeof(struct ether_hdr));
+                    //     ipv4_hdr = rte_pktmbuf_mtod_offset(m, struct ipv4_hdr *, sizeof(struct rte_ether_hdr));
                     //     printf(" IPv4 src: %x dst: %x\n", ipv4_hdr->src_addr, ipv4_hdr->dst_addr);
                     } else {
                         printf("Unkown protocol: %d", eth_hdr->ether_type);
@@ -433,7 +433,7 @@ net_listen(int argc, char** argv, struct fb* fb, bool do_exit)
     if (mbuf_pool == NULL)
         rte_exit(EXIT_FAILURE, "Cannot init mbuf pool\n");
 
-    struct ether_addr mac;
+    struct rte_ether_addr mac;
     RTE_ETH_FOREACH_DEV(port_id) {
         /* skip ports that are not enabled */
         if ((port_mask & (1 << port_id)) == 0)
