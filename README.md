@@ -48,9 +48,9 @@ For details see https://doc.dpdk.org/guides/nics/mlx4.html.
 ```
 # Build dpdk
 sudo apt install libibverbs-dev librdmacm-dev libnuma-dev linux-headers-$(uname -r) libmnl-dev
-wget fast.dpdk.org/rel/dpdk-19.05.tar.xz
-tar xf dpdk-19.05.tar.xz
-cd dpdk-19.05
+wget fast.dpdk.org/rel/dpdk-19.11.tar.xz
+tar xf dpdk-19.11.tar.xz
+cd dpdk-19.11
 sed -i -r 's/CONFIG_RTE_LIBRTE_MLX4_PMD=n/CONFIG_RTE_LIBRTE_MLX4_PMD=y/' config/common_base
 # MLX5: sed -i -r 's/CONFIG_RTE_LIBRTE_MLX5_PMD=n/CONFIG_RTE_LIBRTE_MLX5_PMD=y/' config/common_base
 make config T=x86_64-native-linux-gcc
