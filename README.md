@@ -69,11 +69,20 @@ modprobe -a ib_uverbs mlx4_en mlx4_core mlx4_ib
 # To fix this:
 echo "options mlx4_core log_num_mgm_entry_size=-7" >> /etc/modprobe.d/mlx4_core.conf
 update-initramfs -u
+# If this does not work, try to set log_num_mgm_entry_size=-1
 
 # If you get: net_mlx5: probe of PCI device aborted after encountering an error: Operation not supported
 # update to a newer version of libibverbs with
 echo "deb http://deb.debian.org/debian buster-backports main" >> /etc/apt/sources.list
 apt-get -t buster-backports install libibverbs-dev
+
+# If you get:
+# >> Initializing port 0... EAL: Error - exiting with code: 1
+# >>   Cause: rte_eth_dev_start:err=-12, port=0
+# This is in my opinion a bug in DPDK (see http://mails.dpdk.org/archives/users/2020-January/004642.html)
+# Fix: Start all DPDK-applications with the following EAL (commandline arguments that configure DPDK) arguments:
+# Important is the "-w <device>,dv_flow_en=0" option, which disables a feature wich should be normally disabled if your NIC doesnt support the feature.
+sudo build/pixelflut_v6 -w 04:00.0,dv_flow_en=0 -- -p 0xf
 ```
 
 ### Allocate hugepages

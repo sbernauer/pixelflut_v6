@@ -1,0 +1,132 @@
+Set up system
+===================
+=== sudo modprobe uio_pci_generic
+=== export RTE_SDK=/home/sbernauer/dpdk-19.11
+=== $RTE_SDK/usertools/dpdk-devbind.py --status
+Network devices using kernel driver
+0000:01:00.0 '82599ES 10-Gigabit SFI/SFP+ Network Connection 10fb' if=eno1 drv=ixgbe unused=uio_pci_generic 
+0000:01:00.1 '82599ES 10-Gigabit SFI/SFP+ Network Connection 10fb' if=eno2 drv=ixgbe unused=uio_pci_generic 
+0000:04:00.0 'MT27700 Family [ConnectX-4] 1013' if=enp4s0 drv=mlx5_core unused=uio_pci_generic 
+0000:07:00.0 'I350 Gigabit Network Connection 1521' if=eno3 drv=igb unused=uio_pci_generic *Active*
+0000:07:00.1 'I350 Gigabit Network Connection 1521' if=eno4 drv=igb unused=uio_pci_generic 
+0000:42:00.0 'MT27500 Family [ConnectX-3] 1003' if= drv=mlx4_core unused=uio_pci_generic
+=== sudo $RTE_SDK/usertools/dpdk-devbind.py --bind=uio_pci_generic 0000:01:00.0
+=== sudo $RTE_SDK/usertools/dpdk-devbind.py --bind=uio_pci_generic 0000:01:00.1
+=== sudo sh -c 'echo eth > /sys/bus/pci/devices/0000\:42\:00.0/mlx4_port1'
+=== sudo sh -c 'echo eth > /sys/bus/pci/devices/0000\:42\:00.0/mlx4_port2'
+=== sudo sh -c 'echo 1024 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages'
+=== sudo sh -c 'mkdir -p /mnt/huge'
+=== sudo sh -c 'mount -t hugetlbfs nodev /mnt/huge'
+
+
+Running pktgen-dpdk
+===================
+=== sudo app/x86_64-native-linux-gcc/pktgen -w 0000:04:00.0,dv_flow_en=0 -w 0000:42:00.0 -w 0000:01:00.0 -w 0000:01:00.1 -- -m "2.0,4.1,6.2,7.3,9.4"
+# CAUSES SEGFAULT: === set ports_per_page 6
+
+=== set all proto icmp
+=== set all type ipv6
+=== start all
+=== page main
+| Ports 0-3 of 5   <Main Page>  Copyright (c) <2010-2019>, Intel Corporation
+  Flags:Port        : -------Single      :0 -------Single      :1 -------Single      :2 -------Single      :3
+Link State          :         <UP-10000-FD>         <UP-10000-FD>        <UP-100000-FD>         <UP-40000-FD>      ---Total Rate---
+Pkts/s Max/Rx       :                   0/0                   0/0                   0/0                   0/0                   0/0
+       Max/Tx       :     12155892/12154779     12154577/12153580     18146368/18146368     16079488/15713345     69561110/69139784
+MBits/s Rx/Tx       :                0/9529                0/9528               0/14226               0/12319               0/54205
+Broadcast           :                     0                     0                     0                     0
+Multicast           :                     0                     0                     0                     0
+Sizes 64            :                     0                     0                     0                     0
+      65-127        :                     0                     0                     0                     0
+      128-255       :                     0                     0                     0                     0
+      256-511       :                     0                     0                     0                     0
+      512-1023      :                     0                     0                     0                     0
+      1024-1518     :                     0                     0                     0                     0
+Runts/Jumbos        :                   0/0                   0/0                   0/0                   0/0
+ARP/ICMP Pkts       :                   0/0                   0/0                   0/0                   0/0
+Errors Rx/Tx        :                   0/0                   0/0                   0/0                   0/0
+Total Rx Pkts       :                     0                     0                     0                     0
+      Tx Pkts       :             840295065             840203140            1238195072            1103516160
+      Rx MBs        :                     0                     0                     0                     0
+      Tx MBs        :                658791                658719                970744                865156
+                    :
+Pattern Type        :               abcd...               abcd...               abcd...               abcd...
+Tx Count/% Rate     :         Forever /100%         Forever /100%         Forever /100%         Forever /100%
+Pkt Size/Tx Burst   :             78 /   64             78 /   64             78 /   64             78 /   64
+TTL/Port Src/Dest   :         4/ 1234/ 5678         4/ 1234/ 5678         4/ 1234/ 5678         4/ 1234/ 5678
+Pkt Type:VLAN ID    :      IPv6 / ICMP:0001      IPv6 / ICMP:0001      IPv6 / ICMP:0001      IPv6 / ICMP:0001
+802.1p CoS/DSCP/IPP :             0/  0/  0             0/  0/  0             0/  0/  0             0/  0/  0
+VxLAN Flg/Grp/vid   :      0000/    0/    0      0000/    0/    0      0000/    0/    0      0000/    0/    0
+IP  Destination     :            101:a8c0::            100:a8c0::            103:a8c0::            102:a8c0::
+    Source          :            100:a8c0::            101:a8c0::            102:a8c0::            103:a8c0::
+MAC Destination     :     ec:f4:bb:c4:65:5a     ec:f4:bb:c4:65:58     24:be:05:9e:ce:b1     7c:fe:90:31:0d:d6
+    Source          :     ec:f4:bb:c4:65:58     ec:f4:bb:c4:65:5a     7c:fe:90:31:0d:d6     24:be:05:9e:ce:b1
+PCI Vendor/Addr     :     8086:10fb/01:00.0     8086:10fb/01:00.1     15b3:1013/04:00.0     15b3:1003/42:00.0
+
+-- Pktgen 19.12.0 (DPDK 19.11.0)  Powered by DPDK  (pid:7308) -----------------
+
+=== page 1
+/ Ports 4-7 of 5   <Main Page>  Copyright (c) <2010-2019>, Intel Corporation
+  Flags:Port        : -------Single      :4
+Link State          :         <UP-40000-FD>      ---Total Rate---
+Pkts/s Max/Rx       :                   0/0                   0/0
+       Max/Tx       :     13662143/13506496     69711705/69447941
+MBits/s Rx/Tx       :               0/10589               0/54447
+Broadcast           :                     0
+Multicast           :                     0
+Sizes 64            :                     0
+      65-127        :                     0
+      128-255       :                     0
+      256-511       :                     0
+      512-1023      :                     0
+      1024-1518     :                     0
+Runts/Jumbos        :                   0/0
+ARP/ICMP Pkts       :                   0/0
+Errors Rx/Tx        :                   0/0
+Total Rx Pkts       :                     0
+      Tx Pkts       :            1138134975
+      Rx MBs        :                     0
+      Tx MBs        :                892297
+                    :
+Pattern Type        :               abcd...
+Tx Count/% Rate     :         Forever /100%
+Pkt Size/Tx Burst   :             78 /   64
+TTL/Port Src/Dest   :         4/ 1234/ 5678
+Pkt Type:VLAN ID    :      IPv6 / ICMP:0001
+802.1p CoS/DSCP/IPP :             0/  0/  0
+VxLAN Flg/Grp/vid   :      0000/    0/    0
+IP  Destination     :            105:a8c0::
+    Source          :            104:a8c0::
+MAC Destination     :     00:00:00:00:00:00
+    Source          :     24:be:05:9e:ce:b2
+PCI Vendor/Addr     :     8086:10fb/01:00.0
+
+-- Pktgen 19.12.0 (DPDK 19.11.0)  Powered by DPDK  (pid:7308) -----------------
+
+=== page xstats
+/                  <Port XStats Page>  Copyright (c) <2010-2019>, Intel Corporation
+
+     XStat Name                      |   Per/Second | XStat Name                      |   Per/Second |
+Port =================================================================================================
+  0: tx_good_packets                 |     12506330 | tx_good_bytes                   |    925468342 | 
+     tx_q0packets                    |     12506325 | tx_q0bytes                      |    925467902 | 
+     tx_total_packets                |     12506324 | tx_size_65_to_127_packets       |     12506324 | 
+     out_pkts_untagged               |     12506326 | 
+
+  1: tx_good_packets                 |     12505324 | tx_good_bytes                   |    925394132 | 
+     tx_q0packets                    |     12505329 | tx_q0bytes                      |    925394124 | 
+     tx_total_packets                |     12505327 | tx_size_65_to_127_packets       |     12505329 | 
+     out_pkts_untagged               |     12505328 | 
+
+  2: tx_good_packets                 |     19032512 | tx_good_bytes                   |   1408403890 | 
+     tx_q0packets                    |     19032512 | tx_q0bytes                      |   1408403890 | 
+     tx_port_unicast_packets         |     19031488 | tx_port_unicast_bytes           |   1408330112 | 
+     tx_packets_phy                  |     19031438 | tx_bytes_phy                    |   1484451866 | 
+
+  3: tx_good_packets                 |     13963968 | tx_good_bytes                   |   1033333632 | 
+     tx_q0packets                    |     13963968 | tx_q0bytes                      |   1033333632 | 
+
+  4: tx_good_packets                 |     13963712 | tx_good_bytes                   |   1033314688 | 
+     tx_q0packets                    |     13963712 | tx_q0bytes                      |   1033314688 | 
+
+=== stop all
