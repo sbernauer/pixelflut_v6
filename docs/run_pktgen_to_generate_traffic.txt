@@ -28,12 +28,12 @@ Running pktgen-dpdk
 === set all type ipv6
 === start all
 === page main
-| Ports 0-3 of 5   <Main Page>  Copyright (c) <2010-2019>, Intel Corporation
+\ Ports 0-3 of 5   <Main Page>  Copyright (c) <2010-2019>, Intel Corporation
   Flags:Port        : -------Single      :0 -------Single      :1 -------Single      :2 -------Single      :3
 Link State          :         <UP-10000-FD>         <UP-10000-FD>        <UP-100000-FD>         <UP-40000-FD>      ---Total Rate---
 Pkts/s Max/Rx       :                   0/0                   0/0                   0/0                   0/0                   0/0
-       Max/Tx       :     12155892/12154779     12154577/12153580     18146368/18146368     16079488/15713345     69561110/69139784
-MBits/s Rx/Tx       :                0/9529                0/9528               0/14226               0/12319               0/54205
+       Max/Tx       :     12202911/12153827     12204755/12155779     25147296/25095680     19410816/18950911     80154002/79286565
+MBits/s Rx/Tx       :                0/9528                0/9530               0/19675               0/14857               0/62160
 Broadcast           :                     0                     0                     0                     0
 Multicast           :                     0                     0                     0                     0
 Sizes 64            :                     0                     0                     0                     0
@@ -46,9 +46,9 @@ Runts/Jumbos        :                   0/0                   0/0               
 ARP/ICMP Pkts       :                   0/0                   0/0                   0/0                   0/0
 Errors Rx/Tx        :                   0/0                   0/0                   0/0                   0/0
 Total Rx Pkts       :                     0                     0                     0                     0
-      Tx Pkts       :             840295065             840203140            1238195072            1103516160
+      Tx Pkts       :              98759252              98779460             203278688             156532543
       Rx MBs        :                     0                     0                     0                     0
-      Tx MBs        :                658791                658719                970744                865156
+      Tx MBs        :                 77427                 77443                159370                122721
                     :
 Pattern Type        :               abcd...               abcd...               abcd...               abcd...
 Tx Count/% Rate     :         Forever /100%         Forever /100%         Forever /100%         Forever /100%
@@ -63,15 +63,16 @@ MAC Destination     :     ec:f4:bb:c4:65:5a     ec:f4:bb:c4:65:58     24:be:05:9
     Source          :     ec:f4:bb:c4:65:58     ec:f4:bb:c4:65:5a     7c:fe:90:31:0d:d6     24:be:05:9e:ce:b1
 PCI Vendor/Addr     :     8086:10fb/01:00.0     8086:10fb/01:00.1     15b3:1013/04:00.0     15b3:1003/42:00.0
 
--- Pktgen 19.12.0 (DPDK 19.11.0)  Powered by DPDK  (pid:7308) -----------------
+-- Pktgen 19.12.0 (DPDK 19.11.0)  Powered by DPDK  (pid:3233) -----------------
+
 
 === page 1
-/ Ports 4-7 of 5   <Main Page>  Copyright (c) <2010-2019>, Intel Corporation
+\ Ports 4-7 of 5   <Main Page>  Copyright (c) <2010-2019>, Intel Corporation
   Flags:Port        : -------Single      :4
 Link State          :         <UP-40000-FD>      ---Total Rate---
 Pkts/s Max/Rx       :                   0/0                   0/0
-       Max/Tx       :     13662143/13506496     69711705/69447941
-MBits/s Rx/Tx       :               0/10589               0/54447
+       Max/Tx       :     15997376/15997376     81455762/81455762
+MBits/s Rx/Tx       :               0/12541               0/63861
 Broadcast           :                     0
 Multicast           :                     0
 Sizes 64            :                     0
@@ -84,9 +85,9 @@ Runts/Jumbos        :                   0/0
 ARP/ICMP Pkts       :                   0/0
 Errors Rx/Tx        :                   0/0
 Total Rx Pkts       :                     0
-      Tx Pkts       :            1138134975
+      Tx Pkts       :             281975295
       Rx MBs        :                     0
-      Tx MBs        :                892297
+      Tx MBs        :                221068
                     :
 Pattern Type        :               abcd...
 Tx Count/% Rate     :         Forever /100%
@@ -101,32 +102,32 @@ MAC Destination     :     00:00:00:00:00:00
     Source          :     24:be:05:9e:ce:b2
 PCI Vendor/Addr     :     8086:10fb/01:00.0
 
--- Pktgen 19.12.0 (DPDK 19.11.0)  Powered by DPDK  (pid:7308) -----------------
+-- Pktgen 19.12.0 (DPDK 19.11.0)  Powered by DPDK  (pid:3233) -----------------
 
 === page xstats
-/                  <Port XStats Page>  Copyright (c) <2010-2019>, Intel Corporation
+-                  <Port XStats Page>  Copyright (c) <2010-2019>, Intel Corporation
 
      XStat Name                      |   Per/Second | XStat Name                      |   Per/Second |
 Port =================================================================================================
-  0: tx_good_packets                 |     12506330 | tx_good_bytes                   |    925468342 | 
-     tx_q0packets                    |     12506325 | tx_q0bytes                      |    925467902 | 
-     tx_total_packets                |     12506324 | tx_size_65_to_127_packets       |     12506324 | 
-     out_pkts_untagged               |     12506326 | 
+  0: tx_good_packets                 |     12395944 | tx_good_bytes                   |    917300012 | 
+     tx_q0packets                    |     12395950 | tx_q0bytes                      |    917300226 | 
+     tx_total_packets                |     12395945 | tx_size_65_to_127_packets       |     12395942 | 
+     out_pkts_untagged               |     12395942 | 
 
-  1: tx_good_packets                 |     12505324 | tx_good_bytes                   |    925394132 | 
-     tx_q0packets                    |     12505329 | tx_q0bytes                      |    925394124 | 
-     tx_total_packets                |     12505327 | tx_size_65_to_127_packets       |     12505329 | 
-     out_pkts_untagged               |     12505328 | 
+  1: tx_good_packets                 |     12397604 | tx_good_bytes                   |    917422696 | 
+     tx_q0packets                    |     12397608 | tx_q0bytes                      |    917423066 | 
+     tx_total_packets                |     12397604 | tx_size_65_to_127_packets       |     12397603 | 
+     out_pkts_untagged               |     12397606 | 
 
-  2: tx_good_packets                 |     19032512 | tx_good_bytes                   |   1408403890 | 
-     tx_q0packets                    |     19032512 | tx_q0bytes                      |   1408403890 | 
-     tx_port_unicast_packets         |     19031488 | tx_port_unicast_bytes           |   1408330112 | 
-     tx_packets_phy                  |     19031438 | tx_bytes_phy                    |   1484451866 | 
+  2: tx_good_packets                 |     26644800 | tx_good_bytes                   |   1971714534 | 
+     tx_q0packets                    |     26644800 | tx_q0bytes                      |   1971714534 | 
+     tx_port_unicast_packets         |     26644735 | tx_port_unicast_bytes           |   1971709946 | 
+     tx_packets_phy                  |     26644656 | tx_bytes_phy                    |   2078283168 | 
 
-  3: tx_good_packets                 |     13963968 | tx_good_bytes                   |   1033333632 | 
-     tx_q0packets                    |     13963968 | tx_q0bytes                      |   1033333632 | 
+  3: tx_good_packets                 |     16268928 | tx_good_bytes                   |   1203900672 | 
+     tx_q0packets                    |     16268928 | tx_q0bytes                      |   1203900672 | 
 
-  4: tx_good_packets                 |     13963712 | tx_good_bytes                   |   1033314688 | 
-     tx_q0packets                    |     13963712 | tx_q0bytes                      |   1033314688 | 
+  4: tx_good_packets                 |     16269121 | tx_good_bytes                   |   1203914954 | 
+     tx_q0packets                    |     16269121 | tx_q0bytes                      |   1203914954 | 
 
 === stop all
